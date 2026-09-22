@@ -6,12 +6,11 @@ use std::{
     path::Path,
 };
 
-use rand::{Rng, seq::SliceRandom};
-
 use crate::{
     nt::{RtlAdjustPrivilege, SE_DEBUG_PRIVILEGE, SE_PROF_SINGLE_PROCESS_PRIVILEGE, nt_success},
     service::DriverService,
 };
+use rand::{Rng, seq::SliceRandom};
 
 #[inline]
 pub fn align_down(val: usize, alignment: usize) -> usize {

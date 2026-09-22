@@ -6,8 +6,6 @@ use core::slice;
 use std::{
     ffi::{c_ushort, c_void},
     fmt::Debug,
-    fs::File,
-    io::Read,
     mem,
     path::Path,
     ptr,
@@ -24,8 +22,9 @@ use windows::{
 };
 
 use crate::{
+    ldr,
     pe::{
-        self, IMAGE_DIRECTORY_ENTRY_EXPORT, PIMAGE_DOS_HEADER, PIMAGE_EXPORT_DIRECTORY,
+        IMAGE_DIRECTORY_ENTRY_EXPORT, PIMAGE_DOS_HEADER, PIMAGE_EXPORT_DIRECTORY,
         PIMAGE_NT_HEADERS64,
     },
     utils::{self},
@@ -108,6 +107,15 @@ unsafe extern "system" {
     pub fn NtUnloadDriver(driver_service_name: *mut UNICODE_STRING) -> NTSTATUS;
 
     pub fn NtAddAtom(name: *const u16, length: u32, atom: *mut u16) -> NTSTATUS;
+
+    pub fn RtlImageNtHeader(base: *mut c_void) -> *mut c_void;
+
+    pub fn RtlImageDirectoryEntryToData(
+        base: *mut std::ffi::c_void,
+        mapped_as_image: u8,
+        directory_entry: u16,
+        size: *mut u32,
+    ) -> *mut std::ffi::c_void;
 }
 
 impl Debug for RTL_PROCESS_MODULE_INFORMATION {
@@ -239,12 +247,8 @@ static NTOSKRNL_EXE: LazyLock<Vec<u8>> = LazyLock::new(|| {
 
     let ntos_path = ntos_path_buf.to_str().unwrap();
 
-    map_image(ntos_path).unwrap()
+    ldr::map_image(ntos_path).unwrap()
 });
-
-pub(crate) fn get_kernel_local_base() -> usize {
-    (*NTOSKRNL_EXE).as_ptr() as _
-}
 
 pub fn get_kernel_export(api_name: &str) -> Option<usize> {
     let krnl_base = get_kernelbase()?;
@@ -281,160 +285,4 @@ pub fn get_kernel_export(api_name: &str) -> Option<usize> {
     }
 
     None
-}
-
-pub(crate) fn get_kernel_export_x86(api_name: &str, krnl_base: u64) -> Option<u64> {
-    let dos_header: PIMAGE_DOS_HEADER = NTOSKRNL_EXE.as_ptr() as *mut _;
-    let local_base = dos_header as usize;
-
-    let nt_header =
-        unsafe { &*((local_base + (*dos_header).e_lfanew as usize) as PIMAGE_NT_HEADERS64) };
-
-    let export_directory = unsafe {
-        &*((local_base
-            + nt_header.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress
-                as usize) as PIMAGE_EXPORT_DIRECTORY)
-    };
-
-    let names = (local_base + export_directory.AddressOfNames as usize) as *const u32;
-    let functions = (local_base + export_directory.AddressOfFunctions as usize) as *const u32;
-    let ordinals = (local_base + export_directory.AddressOfNameOrdinals as usize) as *const u16;
-
-    for i in 0..(export_directory.NumberOfNames as usize) {
-        let func_name_addr = local_base + unsafe { *names.wrapping_add(i) } as usize;
-
-        let func_name = unsafe {
-            slice::from_raw_parts(func_name_addr as *const u8, strlen(func_name_addr as _))
-        };
-
-        if api_name == str::from_utf8(func_name).ok()? {
-            let offset =
-                unsafe { *functions.wrapping_add(*ordinals.wrapping_add(i) as usize) } as u64;
-
-            return Some(krnl_base + offset);
-        }
-    }
-
-    None
-}
-
-/// Wow64 compatible
-pub(crate) fn get_kernel_local_export(api_name: &str) -> Option<usize> {
-    let dos_header: PIMAGE_DOS_HEADER = NTOSKRNL_EXE.as_ptr() as *mut _;
-    let local_base = dos_header as usize;
-
-    let nt_header =
-        unsafe { &*((local_base + (*dos_header).e_lfanew as usize) as PIMAGE_NT_HEADERS64) };
-
-    let export_directory = unsafe {
-        &*((local_base
-            + nt_header.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress
-                as usize) as PIMAGE_EXPORT_DIRECTORY)
-    };
-
-    let names = (local_base + export_directory.AddressOfNames as usize) as *const u32;
-    let functions = (local_base + export_directory.AddressOfFunctions as usize) as *const u32;
-    let ordinals = (local_base + export_directory.AddressOfNameOrdinals as usize) as *const u16;
-
-    for i in 0..(export_directory.NumberOfNames as usize) {
-        let func_name_addr = local_base + unsafe { *names.wrapping_add(i as _) } as usize;
-
-        let func_name = unsafe {
-            slice::from_raw_parts(func_name_addr as *const u8, strlen(func_name_addr as _))
-        };
-
-        if api_name == str::from_utf8(func_name).ok()? {
-            let offset = unsafe { *functions.wrapping_add(*ordinals.wrapping_add(i as _) as usize) }
-                as usize;
-
-            return Some(local_base + offset);
-        }
-    }
-
-    None
-}
-
-pub fn map_image(path: &str) -> Result<Vec<u8>> {
-    let mut ntos_file = File::open(path)?;
-
-    let file_size = ntos_file.metadata()?.len();
-
-    let mut file_base = vec![0u8; file_size as _];
-
-    ntos_file.read(&mut file_base)?;
-
-    let hdr_dos = file_base.as_ptr().cast::<pe::IMAGE_DOS_HEADER>();
-
-    let hdr_nt: *const pe::IMAGE_NT_HEADERS64 = unsafe {
-        file_base
-            .as_ptr()
-            .byte_offset((*hdr_dos).e_lfanew as _)
-            .cast::<pe::IMAGE_NT_HEADERS64>()
-    };
-
-    let mut mapped_base: Vec<u8> =
-        Vec::with_capacity((unsafe { *hdr_nt }).OptionalHeader.SizeOfImage as _);
-
-    map_image_at(file_base.as_slice(), mapped_base.as_mut_slice())?;
-
-    Ok(mapped_base)
-}
-
-/// Load a PE image from disk for analysis, x64 only, leave the import table and relocations unfixed
-pub fn map_image_at(file_base: &[u8], mapped_base: &mut [u8]) -> Result<()> {
-    unsafe {
-        let hdr_dos = file_base.as_ptr().cast::<pe::IMAGE_DOS_HEADER>();
-
-        let hdr_nt: *const pe::IMAGE_NT_HEADERS64 = file_base
-            .as_ptr()
-            .byte_offset((*hdr_dos).e_lfanew as _)
-            .cast::<pe::IMAGE_NT_HEADERS64>();
-
-        if (*(file_base.as_ptr() as *const _ as *const pe::IMAGE_DOS_HEADER)).e_magic != 0x5A4D {
-            return Err(anyhow!("Unexpected image format"));
-        }
-
-        let base = mapped_base.as_mut_ptr();
-
-        let data = file_base.as_ptr();
-
-        ptr::copy_nonoverlapping(data, base, (*hdr_nt).OptionalHeader.SizeOfHeaders as _);
-
-        // Copy sections
-        let first_section = hdr_nt.add(1) as *const pe::IMAGE_SECTION_HEADER;
-
-        let mut section = first_section;
-
-        for i in 0..(*hdr_nt).FileHeader.NumberOfSections as usize {
-            let characteristics = (*section).Characteristics;
-            let size_of_raw_data = (*section).SizeOfRawData;
-            let pointer_to_raw_data = (*section).PointerToRawData;
-            let virtual_address = (*section).VirtualAddress;
-
-            // Skip invalid sections
-            if (characteristics
-                & (pe::IMAGE_SCN_MEM_READ | pe::IMAGE_SCN_MEM_WRITE | pe::IMAGE_SCN_MEM_EXECUTE))
-                == 0
-                || size_of_raw_data == 0
-            {
-                section = section.add(1);
-                continue;
-            }
-
-            ptr::copy_nonoverlapping(
-                data.add(pointer_to_raw_data as _),
-                base.add(virtual_address as _),
-                size_of_raw_data as _,
-            );
-
-            section = section.add(1);
-        }
-
-        Ok(())
-    }
-}
-
-#[test]
-fn test_get_kernelbase() {
-    println!("krnl base = {:x}", get_kernelbase().unwrap_or(0));
 }

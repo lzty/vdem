@@ -1,9 +1,11 @@
 pub mod pe;
 pub mod nt;
-pub mod spf;
+mod spf;
 pub mod utils;
+pub mod driver_map;
 pub mod traits;
-pub mod convert;
+mod convert;
+mod ldr;
 pub mod translator;
 pub mod service;
 pub mod exploit;
@@ -11,3 +13,4 @@ pub mod provider;
 pub mod kernel_call;
 pub mod native_buffer;
 pub mod kernel_buffer;
+pub mod mapped_buffer;
