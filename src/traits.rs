@@ -2,6 +2,7 @@ use anyhow::Result;
 use std::ffi::c_void;
 
 use crate::{
+    kernel_buffer::KernelBuffer,
     kernel_call::{CallBy, KernelCallGuard},
     mapped_buffer::MapBuffer,
 };
@@ -30,6 +31,7 @@ pub(crate) trait VaToPa {
     fn va_to_pa(&self, va: *mut c_void) -> Result<*mut c_void>;
 }
 
+/// Primitive for mapping kernel memory into suer space
 pub trait MemoryMap: ExecuteKernelCall {
     fn mmap(&'_ self, va: *mut c_void, size: usize) -> Result<MapBuffer<'_, Self>>
     where
