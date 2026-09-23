@@ -2,6 +2,10 @@ use crate::{kernel_call::CallBy, traits::ExecuteKernelCall};
 use core::slice;
 use std::{ffi::c_void, ptr};
 
+/// Wrap and manage a pre-allocated kernel memory range(typically allocated by `Exploit::allocate`)
+/// 
+/// The buffer contains two raw memory pointers in kernel side and user side respectively,
+/// The user side one can be used for R/W in the calling user process
 pub struct KernelBuffer<'a, E>
 where
     E: ExecuteKernelCall,
@@ -13,10 +17,12 @@ where
 }
 
 impl<'a, E: ExecuteKernelCall> KernelBuffer<'a, E> {
+    /// Get kernel side virtual address
     pub fn get_k(&self) -> *mut c_void {
         self.virt_k
     }
 
+    /// Get user side virtual address
     pub fn get_u(&self) -> *mut c_void {
         self.virt_u
     }

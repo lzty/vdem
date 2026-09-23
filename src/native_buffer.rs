@@ -5,6 +5,9 @@ use windows::Win32::System::Memory::{
     MEM_COMMIT, MEM_RESERVE, PAGE_EXECUTE_READWRITE, VIRTUAL_FREE_TYPE, VirtualAlloc, VirtualFree,
 };
 
+/// Mange a native memory range allocated by the native `VirtualAlloc` function
+/// 
+/// It is compitable for rust safe slice operations
 pub(crate) struct NativeBuffer<T: Sized> {
     raw_ptr: *mut T,
     length: usize,
