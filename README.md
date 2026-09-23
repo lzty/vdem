@@ -72,7 +72,7 @@ i already wrote some POCs that demonstrate how to use these features, see [here]
     // The mapped address have R/W rights
     let mapbuf = exploit.mmap(krnlbase as _, 4096).unwrap();
 
-    println!("kernel base is mapped at {:p}", mapbuf.get());
+    println!("kernel base is mapped at {:p}", mapbuf.as_ptr());
 ```
 The mapped address have R/W rights, so the user can read / write to that address
 
