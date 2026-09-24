@@ -5,6 +5,7 @@ members = [
     "providers",
     "examples/load_driver",
     "examples/memory_map",
+    "examples/terminte_process",
     "examples/execute_kernel_function",
     "examples/execute_arbitrary_code"
-, "providers", "examples/memory_io"]
+, "providers", "examples/memory_io", "examples/terminte_process"]

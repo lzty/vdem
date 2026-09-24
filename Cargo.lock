@@ -94,6 +94,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "example_terminte_process"
+version = "0.1.0"
+dependencies = [
+ "providers",
+ "vdem",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"

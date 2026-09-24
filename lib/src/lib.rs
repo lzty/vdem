@@ -12,6 +12,7 @@ pub mod exploit;
 pub mod provider;
 pub mod kernel_call;
 mod native_buffer;
+pub mod process;
 pub mod shellcode;
 pub mod kernel_buffer;
 pub mod mapped_buffer;
