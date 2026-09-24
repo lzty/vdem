@@ -330,16 +330,17 @@ pub(crate) fn get_module_export(
         if current_name == api_name {
             let ordinal = unsafe { *ordinals.add(i as usize) };
             let func_rva = unsafe { *functions.add(ordinal as usize) };
-            let func_va = rva_to_va(base_k, func_rva);
+            let func_va_k = rva_to_va(base_k, func_rva);
+            let func_va_u = rva_to_va(base_u, func_rva);
 
             // Forwarded export check
-            let func_addr = func_va as usize;
+            let func_addr = func_va_u as usize;
             if func_addr >= exp_dir_start && func_addr < exp_dir_end {
                 // Target is a forwarder string, ignored
                 return None;
             }
 
-            return Some(func_va);
+            return Some(func_va_k);
         }
     }
 
@@ -398,7 +399,7 @@ pub(crate) fn fixup_imports(base_u: *mut c_void) -> Result<()> {
 
                 #[cfg(debug_assertions)]
                 println!(
-                    "[+] Import function {:?}({:p}) fixed.",
+                    "[+] Import function: {:?}({:p}) fixed.",
                     func_name, func_addr
                 );
 
