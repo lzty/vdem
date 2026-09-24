@@ -8,7 +8,7 @@ pub enum CallBy<'a> {
 }
 
 /// A call guard that is capable for calling a kernel function and handle the disposition
-/// 
+///
 /// user can call the instance object just like a calling a normal function, arguments type must match
 /// the signature of `F`
 pub struct KernelCallGuard<'a, F: Sized + Copy, E>

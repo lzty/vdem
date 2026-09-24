@@ -52,6 +52,39 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f678cf4a922c215c63e0de95eb1ff08a958a81d47e485cf9da1e27bf6305cfa5"
 
 [[package]]
+name = "example_execute_arbitrary_code"
+version = "0.1.0"
+dependencies = [
+ "providers",
+ "vdem",
+]
+
+[[package]]
+name = "example_execute_kernel_function"
+version = "0.1.0"
+dependencies = [
+ "providers",
+ "vdem",
+ "windows",
+]
+
+[[package]]
+name = "example_load_driver"
+version = "0.1.0"
+dependencies = [
+ "providers",
+ "vdem",
+]
+
+[[package]]
+name = "example_memory_map"
+version = "0.1.0"
+dependencies = [
+ "providers",
+ "vdem",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -85,6 +118,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "providers"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "vdem",
+ "windows",
 ]
 
 [[package]]

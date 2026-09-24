@@ -1,0 +1,17 @@
+[package]
+name = "providers"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1"
+vdem = { path = "../lib" }
+
+[dependencies.windows]
+version = "0.61"
+features = [
+    "Win32_System",
+    "Win32_System_IO",
+    "Win32_System_Ioctl",
+    "Win32_Storage_FileSystem",
+]

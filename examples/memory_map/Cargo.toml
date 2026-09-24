@@ -1,0 +1,8 @@
+[package]
+name = "example_memory_map"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+providers = { path = "../../providers" }
+vdem = {path = "../../lib"}

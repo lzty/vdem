@@ -4,8 +4,7 @@ use std::path::Path;
 use windows::{
     Win32::{
         Foundation::{
-            ERROR_SUCCESS, RtlNtStatusToDosError, STATUS_OBJECT_NAME_COLLISION,
-            WIN32_ERROR,
+            ERROR_SUCCESS, RtlNtStatusToDosError, STATUS_OBJECT_NAME_COLLISION, WIN32_ERROR,
         },
         System::Registry::{
             HKEY, HKEY_LOCAL_MACHINE, REG_DWORD, REG_EXPAND_SZ, RegCreateKeyW, RegDeleteTreeW,

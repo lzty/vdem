@@ -2,7 +2,6 @@ use anyhow::Result;
 use std::ffi::c_void;
 
 use crate::{
-    kernel_buffer::KernelBuffer,
     kernel_call::{CallBy, KernelCallGuard},
     mapped_buffer::MapBuffer,
 };

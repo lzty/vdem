@@ -1,0 +1,18 @@
+[package]
+name = "example_execute_kernel_function"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+vdem = {path = "../../lib"}
+providers = { path = "../../providers" }
+
+[dependencies.windows]
+version = "0.61"
+features = [
+    "Win32_System",
+    "Win32_System_IO",
+    "Win32_System_Ioctl",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+]
