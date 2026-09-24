@@ -1,0 +1,8 @@
+[package]
+name = "example_resume_process"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+vdem = { path = "../../lib" }
+providers = { path = "../../providers" }

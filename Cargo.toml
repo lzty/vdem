@@ -8,4 +8,4 @@ members = [
     "examples/terminte_process",
     "examples/execute_kernel_function",
     "examples/execute_arbitrary_code"
-, "providers", "examples/memory_io", "examples/terminte_process"]
+, "providers", "examples/memory_io", "examples/terminte_process", "examples/suspend_process", "examples/resume_process"]
