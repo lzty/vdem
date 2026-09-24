@@ -47,6 +47,7 @@ This are five examples demonstrate how to use this library located in [examples]
 For other examples: see [here](https://github.com/lzty/CVE-2026-94128) and [here](https://github.com/lzty/CVE-2026-94129)
 
 # What to do in next
+- terminate process
 - support read / write process memorys
 
 # Disclaimer
