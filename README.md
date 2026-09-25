@@ -9,6 +9,7 @@ This library provides many useful features such as:
 - manually map and load a unsigned driver from memory or file
 - execute arbitrary kernel code in user side
 - terminate, suspend, resume a process no matter it is privileged or not
+- read / write arbitrary memory of other process memory
  
 All these features based on the vulnerable providers(see trait Provider for details), a provider represent a kernel mode driver that has arbitrary memory R/W vulnerabilities.
 
@@ -43,12 +44,9 @@ exploit.select("BS_LED").unwrap();
 ```
 and then do what you can by using that exploit instance
 
-There are eight examples demonstrate how to use this library located in [examples](https://github.com/lzty/vdem/examples) directory
+There are nine examples demonstrate how to use this library located in [examples](https://github.com/lzty/vdem/examples) directory
 
 For other examples: see [here](https://github.com/lzty/CVE-2026-94128) and [here](https://github.com/lzty/CVE-2026-94129)
-
-# What to do in next
-- support read / write process memorys
 
 # Disclaimer
 This project is developed strictly for educational and security research purposes. 
