@@ -275,6 +275,17 @@ pub(crate) fn copy_image(old_base: *const c_void, new_base: *mut c_void) {
                 size_of_raw_data as _,
             );
 
+            // Zero out the extra bytes in the left of section data
+            if size_of_raw_data < (*p_section).Misc.VirtualSize {
+                ptr::write_bytes(
+                    new_base
+                        .wrapping_add(virtual_address as _)
+                        .wrapping_add(size_of_raw_data as _),
+                    0,
+                    ((*p_section).Misc.VirtualSize - size_of_raw_data) as _,
+                );
+            }
+
             p_section = p_section.add(1);
         }
     }
