@@ -224,7 +224,7 @@ impl DriverService {
 
 #[test]
 fn test_driver_service() {
-    let ds = DriverService::new("fuck", "E:\\Fuck\\fuck.sys")
+    let ds = DriverService::new("test", "E:\\Fuck\\test.sys")
         .inspect_err(|e| {
             panic!("install driver service failed, err = {}", e.message());
         })
