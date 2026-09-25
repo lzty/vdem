@@ -1,6 +1,37 @@
-/* E:\repos\test\llvmtest\x64\Release\driver_test.sys (2026/9/22 19:39:57)
-起始位置(h): 00000000, 结束位置(h): 000011FF, 长度(h): 00001200 */
-
+/// A simple driver data for testing
+///
+/// The C++ code is here:
+/// ```c++
+/// extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT driverObject, PUNICODE_STRING registryPath)
+/// {
+/// 	UNREFERENCED_PARAMETER(driverObject);
+/// 	UNREFERENCED_PARAMETER(registryPath);
+/// 
+/// 	DbgPrint("Driver Loaded\n");
+/// 
+/// 	LARGE_INTEGER currentSystemTime;
+/// 	KeQuerySystemTimePrecise(&currentSystemTime);
+/// 
+/// 	DbgPrint("System time: %llx\n", currentSystemTime.QuadPart);
+/// 
+/// 	PUNICODE_STRING processImageName{};
+/// 
+/// 	SeLocateProcessImageName(PsGetCurrentProcess(), &processImageName);
+/// 
+/// 	DbgPrint("Current process: %wZ\n", processImageName);
+/// 
+/// 	ExFreePool(processImageName);
+/// 
+/// 	HANDLE hEngine{ nullptr };
+/// 
+/// 	auto status = FwpmEngineOpen(nullptr, RPC_C_AUTHN_DEFAULT, nullptr, nullptr, &hEngine);
+/// 
+/// 	if NT_SUCCESS(status)
+/// 		FwpmEngineClose(hEngine);
+/// 
+///     return status;
+/// }
+/// ```
 pub(crate) static UNSIGNED_DRIVER_DATA: [u8; 3072] = [
     0x4D, 0x5A, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
     0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

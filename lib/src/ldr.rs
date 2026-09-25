@@ -71,7 +71,7 @@ pub(crate) fn map_image_at(file_base: &[u8], mapped_base: &mut [u8]) -> Result<(
 
         let mut section = first_section;
 
-        for i in 0..(*hdr_nt).FileHeader.NumberOfSections as usize {
+        for _ in 0..(*hdr_nt).FileHeader.NumberOfSections as usize {
             let characteristics = (*section).Characteristics;
             let size_of_raw_data = (*section).SizeOfRawData;
             let pointer_to_raw_data = (*section).PointerToRawData;
@@ -194,9 +194,6 @@ pub(crate) fn relocate_image(base_u: *mut c_void, base_k: *mut c_void) -> Result
                         + (*reloc_list).offset() as usize)
                         as *mut usize;
 
-                    // relocation code will trigger the rust `integer overflow check` and `misaligned pointer check`
-                    // thus the code will not work in debug mode, disable overflow check(in Cargo.toml, by set overflow-checks = false)
-                    // and using unaligned read/write to `bypass` these runtime checks
                     match (*reloc_list).type_() {
                         pe::IMAGE_REL_BASED_DIR64 => {
                             let val = (target_address as *mut usize).read_unaligned()
