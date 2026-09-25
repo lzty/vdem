@@ -1,0 +1,8 @@
+[package]
+name = "example_rw_process_memory"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+vdem = { path = "../../lib" }
+providers = { path = "../../providers" }

@@ -7,5 +7,11 @@ members = [
     "examples/memory_map",
     "examples/terminte_process",
     "examples/execute_kernel_function",
-    "examples/execute_arbitrary_code"
-, "providers", "examples/memory_io", "examples/terminte_process", "examples/suspend_process", "examples/resume_process"]
+    "examples/execute_arbitrary_code",
+    "providers",
+    "examples/memory_io",
+    "examples/terminte_process",
+    "examples/suspend_process",
+    "examples/resume_process",
+    "examples/rw_process_memory"
+]
