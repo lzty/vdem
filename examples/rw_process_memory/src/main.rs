@@ -4,13 +4,21 @@ use providers::bsled::BsLed64;
 use vdem::{exploit::Exploit, process::MapProcessMemory, utils::promote_privilege_to_debug_level};
 
 fn main() {
+    // Attention:
+    // calling Exploit::mmap_process will cause BSOD if you pass a invalid address in user space
+    // so it is a good choice to run it in debug mode to see what memory problems cause that BSOD 
     #[cfg(debug_assertions)]
-    unsafe { core::arch::asm!("int 3") }
+    unsafe {
+        core::arch::asm!("int 3")
+    }
 
     let args = env::args().collect::<Vec<String>>();
 
     if args.len() < 3 {
-        panic!("Usage: {} <pid> <address - hex format> <length - hex format>", &args[0]);
+        panic!(
+            "Usage: {} <pid> <address - hex format> <length - hex format>",
+            &args[0]
+        );
     }
 
     let pid: u32 = u32::from_str_radix(&args[1], 10).expect("Invalid process id");
