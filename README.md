@@ -9,9 +9,9 @@ This library provides many useful features such as:
 - manually map and load a unsigned driver from memory or file
 - execute arbitrary kernel code in user side
 - terminate, suspend, resume a process no matter it is privileged or not
-- read / write arbitrary memory of other process memory
+- allocate / read / write arbitrary memory in other process
  
-All these features based on the vulnerable providers(see trait Provider for details), a provider represent a kernel mode driver that has arbitrary memory R/W vulnerabilities.
+All these features based on the vulnerable providers(see Provider trait for details), a provider represent a kernel mode driver that has arbitrary memory R/W vulnerabilities.
 
 # How to use
 First you should implement your own provider, like this
