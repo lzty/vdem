@@ -34,3 +34,15 @@ pub trait MapProcessMemory: ShellCode {
     where
         Self: Sized;
 }
+
+pub trait Allocator: ShellCode {
+    fn allocate_process_memory(
+        &self,
+        pid: u32,
+        base_address: *mut c_void,
+        size: usize,
+        protection: u32,
+    ) -> Result<(*mut c_void, usize)>;
+
+    fn free_process_memory(&self, pid: u32, base_address: *mut c_void, size: usize) -> Result<()>;
+}

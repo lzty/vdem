@@ -94,7 +94,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "example_resume_process"
+name = "example_process_memory"
 version = "0.1.0"
 dependencies = [
  "providers",
@@ -102,7 +102,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "example_rw_process_memory"
+name = "example_resume_process"
 version = "0.1.0"
 dependencies = [
  "providers",

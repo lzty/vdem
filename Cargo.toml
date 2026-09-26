@@ -13,5 +13,5 @@ members = [
     "examples/terminte_process",
     "examples/suspend_process",
     "examples/resume_process",
-    "examples/rw_process_memory"
+    "examples/process_memory"
 ]
