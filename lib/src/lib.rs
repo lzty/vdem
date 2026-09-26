@@ -2,6 +2,7 @@ pub mod pe;
 pub mod nt;
 mod spf;
 pub mod utils;
+pub mod memutils;
 pub mod driver_map;
 pub mod traits;
 mod convert;
