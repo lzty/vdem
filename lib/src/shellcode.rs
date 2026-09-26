@@ -20,7 +20,7 @@ pub trait ShellCode: ExecuteKernelCall {
     /// # Arguments
     /// - F: by given the pre-allocated buffer, the callee fill in the shellcode and return offset where the execution will start
     /// - B: the build delegate signature
-    /// - Return a safe ShellCodeGuard
+    /// - Return a safe callable ShellCodeGuard
     fn build_shellcode<'a, F: Sized + Copy, B: FnOnce(&mut [u8]) -> usize>(
         &'_ self,
         size_of_code: usize,
