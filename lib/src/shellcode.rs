@@ -19,7 +19,7 @@ impl<'a, F: Sized + Copy, E: ExecuteKernelCall> Deref for ShellCodeGuard<'a, F, 
 pub trait ShellCode: ExecuteKernelCall {
     /// # Arguments
     /// - F: by given the pre-allocated buffer, the callee fill in the shellcode and return offset where the execution will start
-    /// - B: the build delegate signature
+    /// - B: a builer delegate for assemble shell code
     /// - Return a safe callable ShellCodeGuard
     fn build_shellcode<'a, F: Sized + Copy, B: FnOnce(&mut [u8]) -> usize>(
         &'_ self,
